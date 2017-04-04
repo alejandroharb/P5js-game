@@ -1,0 +1,8 @@
+.canvas-wrapper {
+    display:block;
+    margin: 50px auto;
+}
+canvas {
+    margin: 0 auto;
+    display: block;
+}
