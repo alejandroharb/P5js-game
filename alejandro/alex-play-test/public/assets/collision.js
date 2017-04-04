@@ -7,7 +7,7 @@ function preload() {  // preload() runs once
 }
 
 function setup() {
-  var myCanvas = createCanvas(600, 400);
+  var myCanvas = createCanvas(800, 1000);
   myCanvas.parent('canvas'); 
   image(img, 0, 0);
   image(pinataImg, 0, 0);
@@ -19,15 +19,38 @@ function setup() {
   pinata.addImage(pinataImg);
 
 }
+var posX = 350
+var posY = 200;
 
 function draw() {
   background(200,200,200,200);  
   
-  star.position.x = mouseX;
-  star.position.y = mouseY;
+  if(accelerationX > 0) {
+    posX += accelerationX*4;
+    $('.accData').append($('<li>').text("X acc: " + accelerationX))
+  }
+  if(accelerationY > 0) {
+    posY += accelerationY*4;
+    $('.accData').append($('<li>').text("Y acc: " + accelerationY))
+  }
+  if(accelerationX < 0) {
+    posX += accelerationX*4;
+    $('.accData').append($('<li>').text("X acc: " + accelerationX))
+  }
+  if(accelerationY < 0) {
+    posY += accelerationY*4;
+    $('.accData').append($('<li>').text("Y acc: " + accelerationY))
+  }
 
-  star.displace(pinata);
+  star.position.x = posX;
+  star.position.y = posY;
 
+  star.bounce(pinata);
+
+  if(star.position.x < 0) { star.position.x = 2; }
+  if(star.position.x > width) {star.position.x = width - 2;}
+  if (star.position.y < 0 ) { star.position.y = 1;}
+  if (star.position.y > height) { star.position.y = height -1;}
   drawSprites();
 }
 
