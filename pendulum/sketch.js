@@ -11,6 +11,11 @@ var jit = 10;
 
 var pinata;
 var spr2;
+
+function preload() {
+  arm = loadImage('arm.png')
+}
+
 function setup() {
   createCanvas(600, 600);
 
@@ -22,8 +27,9 @@ function setup() {
   pinata.velocity.y = 0;
   pinata.velocity.x = 0;
 
-  bat = createSprite(600, 500, 20, 300);
+  bat = createSprite(500, 400, 20, 300);
   bat.shapeColor = color(128);
+  bat.addImage(arm)
   spr2 = createSprite(0, 0, 10, 10);
   spr2.shapeColor = color(128);
 }
