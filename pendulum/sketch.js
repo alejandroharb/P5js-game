@@ -22,7 +22,9 @@ function setup() {
   pinata.velocity.y = 0;
   pinata.velocity.x = 0;
 
-  spr2 = createSprite(0, 0, 50, 50);
+  bat = createSprite(600, 500, 20, 300);
+  bat.shapeColor = color(128);
+  spr2 = createSprite(0, 0, 10, 10);
   spr2.shapeColor = color(128);
 }
 
@@ -35,11 +37,12 @@ function draw() {
   spr2.position.y = mouseY;
   // spr2.displace(pinata);
 
+  // overlap has been set to be active when pinata is max 5 degrees from equilibrium position
  if (angle < abs(Math.PI/36)) {
 
   if (spr2.overlap(pinata)) {
     pinata.shapeColor = color(255);
-    // touch angle set to 45
+    // angle set to 45 after hit/overlap/collision occurs
 
     // set math here:
     // speed from bat (verctor if pinata designed in sections)
@@ -50,10 +53,6 @@ function draw() {
     // remove pinata at some point
     hits++;
     console.log("number of hits: " + hits);
-
-
-
-
 
   }
   else {
@@ -72,22 +71,17 @@ function draw() {
       // pinata.draw = function() {ellipse(0, 0, 5, 5)}
     } else {
   // if (angle != 0) {
-    swing()
+    pinataSwing()
   // }
   }
-
 
   drawSprites();
 }
 
-function swing() {
+function pinataSwing() {
     console.log("Find rotate option of pinata")
     acc = -gravity*sin(angle);
     // console.log("acc: " + acc)
-
-    // accumulates too fast, value is big
-    pinata.velocity.x += acc;
-    // console.log("vel-x: " + pinata.velocity.x)
 
     // rotating object to align with rope plus some jittering - fix jittering to re-start after every hit
     if (angle != 0) {
