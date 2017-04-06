@@ -1,5 +1,5 @@
-var pivot_x = 300
-var pivot_y = 100
+var pivot_x = 250;
+var pivot_y = 20;
 var len = 250;
 var angle = 0;
 // var angle = Math.PI/4 * 1;
@@ -8,12 +8,11 @@ var acc;
 var vel;
 var hits = 0;
 var jit = 10;
-
 var pinata;
 var spr2;
 
 function preload() {
-  arm = loadImage('arm.png')
+  arm = loadImage('arm125.png')
 }
 
 function setup() {
@@ -27,26 +26,52 @@ function setup() {
   pinata.velocity.y = 0;
   pinata.velocity.x = 0;
 
-  bat = createSprite(500, 400, 20, 300);
+  // bat
+  bat = createSprite(500, 450, 20, 200);
   bat.shapeColor = color(128);
   bat.addImage(arm)
-  spr2 = createSprite(0, 0, 10, 10);
+  bat.velocity.x = 0;
+  
+  // other temp object
+  spr2 = createSprite(0, 0, 20, 20);
   spr2.shapeColor = color(128);
 }
+
+// bat hit function triggered by mouse press
+function hit() {
+  if (mouseIsPressed) {
+    // random cord length
+  len += random(-10, 40)
+  
+    // forward x and some up/down y position change
+  bat.position.x += random(0, -50);
+  bat.position.y += random(-10, 20)
+  bat.rotation = -20;
+} else {
+  // return to original position
+  bat.rotation = 10;
+  bat.position.x = 500;
+  bat.position.y = 400
+  len = 250;
+}
+}
+
 
 function draw() {
   background(50);
   // reference pivot point - not needed
-  ellipse(300, 100, 5, 5);
+  ellipse(250, 20, 5, 5);
 
-  spr2.position.x = mouseX;
-  spr2.position.y = mouseY;
+  // spr2.position.x = mouseX;
+  // spr2.position.y = mouseY;
   // spr2.displace(pinata);
+
 
   // overlap has been set to be active when pinata is max 5 degrees from equilibrium position
  if (angle < abs(Math.PI/36)) {
 
-  if (spr2.overlap(pinata)) {
+  // if (spr2.overlap(pinata)) {
+    if (bat.overlap(pinata)) {
     pinata.shapeColor = color(255);
     // angle set to 45 after hit/overlap/collision occurs
 
@@ -67,7 +92,7 @@ function draw() {
  }
 
   // what happens after screwing up pinata
-  if (hits >= 4) {
+  if (hits >= 10) {
       pinata.remove();
 
       // replace here with broken pinata
@@ -81,6 +106,7 @@ function draw() {
   // }
   }
 
+  hit();
   drawSprites();
 }
 
