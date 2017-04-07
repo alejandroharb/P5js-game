@@ -1,3 +1,4 @@
+// pendulum 
 var pivot_x = 250;
 var pivot_y = 20;
 var len = 250;
@@ -9,7 +10,29 @@ var vel;
 var hits = 0;
 var jit = 10;
 var pinata;
-var spr2;
+
+//-------------Spring--------------
+// Spring drawing constants for top bar
+var ready = true;
+var springHeight = 32,
+    left,
+    right,
+    maxHeight = 300,
+    minHeight = 100,
+    over = false,
+    move = false;
+
+// Spring simulation constants
+var M = 8,  // Mass
+    K = 0.2,  // Spring constant
+    D = 0.98; // Damping
+    // R = 0;
+
+// Spring simulation variables
+var ps = 0,   // Position   ps = R,
+    vs = 0.0, // Velocity
+    as = 0,   // Acceleration
+    f = 0;    // Force
 
 function preload() {
   arm = loadImage('arm125.png')
@@ -32,7 +55,10 @@ function setup() {
   bat.addImage(arm)
   bat.velocity.x = 0;
   
-  // other temp object
+  // pull
+  pull = -200;
+  
+  // testing collision sprite
   spr2 = createSprite(0, 0, 20, 20);
   spr2.shapeColor = color(128);
 }
@@ -41,9 +67,9 @@ function setup() {
 function hit() {
   if (mouseIsPressed) {
     // random cord length
-  len += random(-10, 40)
+    // len += random(-10, 40)
   
-    // forward x and some up/down y position change
+    // bat forward x and some up/down y position change
   bat.position.x += random(0, -50);
   bat.position.y += random(-10, 20)
   bat.rotation = -20;
@@ -56,21 +82,18 @@ function hit() {
 }
 }
 
+// *************************** //
 
 function draw() {
   background(50);
   // reference pivot point - not needed
   ellipse(250, 20, 5, 5);
-
-  // spr2.position.x = mouseX;
-  // spr2.position.y = mouseY;
-  // spr2.displace(pinata);
-
+  // reference equil point - not needed
+  ellipse(250, len + 20, 5, 5);
 
   // overlap has been set to be active when pinata is max 5 degrees from equilibrium position
  if (angle < abs(Math.PI/36)) {
 
-  // if (spr2.overlap(pinata)) {
     if (bat.overlap(pinata)) {
     pinata.shapeColor = color(255);
     // angle set to 45 after hit/overlap/collision occurs
@@ -94,26 +117,62 @@ function draw() {
   // what happens after screwing up pinata
   if (hits >= 10) {
       pinata.remove();
-
       // replace here with broken pinata
       pinata.velocity.x = 0;
       pinata.velocity.y = 0;
       line(300, pivot_y, 300, 350);
-      // pinata.draw = function() {ellipse(0, 0, 5, 5)}
     } else {
   // if (angle != 0) {
     pinataSwing()
   // }
   }
-
+  
+  if (pull !== 0 ) {
+    displacement = pull;
+    updateSpring()
+  }
+  
   hit();
   drawSprites();
 }
 
-function pinataSwing() {
+// ************************ //
+
+function updateSpring() {
+
+  // Update the spring position
+  if ( pull > -30 ) {
+    // f = -K * ( ps + R ); // f=-ky
+      f = -K * ( ps ); // f=-ky
+    as = f / M;          // Set the acceleration, f=ma == a=f/m
+    vs += as; // Set the velocity
+    vs *= D;  // damping
+    ps = ps + vs;        // Updated position
+  }
+
+  if ( abs(vs) > 5) {
+    ready = false;
+  } else { ready = true}
+  if (abs(vs) < 0.1) {
+    vs = 0.0;
+  }
+
+
+  // Set and constrain the position of top bar
+  if (pull < -30) {
+    // $('.accData').append($('<li>').text("Y acc: " + pull))
+    ps = pull*0.5;
+    pull *= 0.01;
+    ps = constrain(ps, minHeight, maxHeight);
+  }
+  
+}
+
+// ******************** //
+
+function pinataSwing(displacement) {
     console.log("Find rotate option of pinata")
     acc = -gravity*sin(angle);
-    // console.log("acc: " + acc)
 
     // rotating object to align with rope plus some jittering - fix jittering to re-start after every hit
     if (angle != 0) {
@@ -122,12 +181,14 @@ function pinataSwing() {
     }
 
     pinata.velocity.y += acc;
-    pinata.velocity.y *= 0.99;
-    // console.log("vel-y: " + pinata.velocity.y)
+    pinata.velocity.y *= 0.99;  // damping oscillation
     angle += pinata.velocity.y;
-    pinata.position.x = pivot_x + len*sin(angle);
-    pinata.position.y = pivot_y + len*cos(angle);
+    pinata.position.x = pivot_x + (len - ps)*sin(angle);
+    pinata.position.y = pivot_y + (len - ps)*cos(angle);
     line(pivot_x, pivot_y, pinata.position.x + random(-1, 1), pinata.position.y);
     pinata.addSpeed(pinata.velocity.y, acc);
 
 }
+
+
+
