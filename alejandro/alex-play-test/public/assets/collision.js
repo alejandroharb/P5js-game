@@ -4,6 +4,12 @@ var pinata;
 var len = 10;
 // bat angle
 var batAngle;
+var bat;
+var batX;
+var batY;
+var armX;
+var armY;
+batAngle = -90;
 //-------------Spring--------------
 // Spring drawing constants for top bar
 var ready = true;
@@ -19,7 +25,7 @@ var springHeight = 32,
 var M = 8, // Mass
   K = 0.2, // Spring constant
   D = 0.92, // Damping
-  R = 600; // Rest position
+  R = 400; // Rest position
 
 // Spring simulation variables
 var ps = R, // Position
@@ -35,7 +41,7 @@ function preload() {
 
 function setup() {
   //canvas width spans width of browser window, height fixed
-  var myCanvas = createCanvas(windowWidth-20, 900);
+  var myCanvas = createCanvas(900, 700);
   //canvas set inside div id='canvas'
   myCanvas.parent('canvas');
 
@@ -45,11 +51,23 @@ function setup() {
   left = width / 2 - 100;
   right = width / 2 + 100;
   // -------------bat-----------------
-  batAngle = 0; //
-  bat = createSprite(width - 150, 450, 20, 200);
+  batX = width / 2;
+  batY = height / 3;
+  // var armY = batY;
+  // var armX = batX;
+  bat = createSprite(batX, batY, batX + 20, batY + 100);
   bat.shapeColor = color(128);
   bat.addImage(arm)
 
+  // bat.draw = function () {
+  //   push();
+  //   rectMode(CENTER);
+  //   rect(batX, batY, 20, 200);
+  //   pop();
+
+  //   // image(arm)
+
+  // }
 }
 
 
@@ -65,21 +83,30 @@ function draw() {
 }
 
 function batSwing() {
-  if (accelerationX > 0) {
-    batAngle += accelerationX*0.02
+  armY = batY + 100
+  armX = batX;
+  batAngle = constrain(batAngle, 45, -90);
+  if (mouseIsPressed) {
+    batAngle -= 0.1;
+    bat.rotation = batAngle;
+    //location of Y depending on the angle
+    // bat.position.y = armY += abs(armX * tan(degrees(batAngle)));
+    console.log("----------------")
+    console.log(armY)
+    // bat.position.x = constrain(bat.position.x, batX - 100, batX + 100);
+    // bat.position.y = constrain(bat.position.y, batY - 100, batY + 100);
   }
-  if (accelerationX < 0){
-    batAngle += accelerationX;
-  }
+  // if (accelerationX < 0) {
+  //   batAngle += accelerationX;
+  // }
   // //constrain bat angle for restring swing rotation
-  batAngle = constrain(batAngle, -90, 0);
-  bat.rotation = batAngle;
+
 }
 
 function drawSpring() {
   // Draw rectangle rope
   fill(0.2);
-  var baseWidth = displayWidth*0.005;
+  var baseWidth = displayWidth * 0.005;
   rect(width / 2 - baseWidth, 0, width / 2 + baseWidth, ps + springHeight);
 
   // Set color and draw pinata(square now)

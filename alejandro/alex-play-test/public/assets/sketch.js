@@ -35,7 +35,7 @@ var ps = 0,   // Position   ps = R,
     f = 0;    // Force
 
 function preload() {
-  arm = loadImage('arm125.png')
+  arm = loadImage('assets/image/arm125.png')
 }
 
 function setup() {
@@ -125,7 +125,7 @@ function draw() {
   // }
   }
   
-  if (hits !== 0 ) {
+  if (accelerationY !== 0 ) {
     displacement = accelerationY;
     updateSpring()
   }
