@@ -3,7 +3,7 @@ var pivot_x = 250;
 var pivot_y = 20;
 var len = 250;
 var angle = 0;
-// var angle = Math.PI/4 * 1;
+// var angle = Math.PI/4;
 var gravity = 0.01;
 var acc;
 var vel;
@@ -41,47 +41,28 @@ var candies = [];
 
 // preload image to sprite
 function preload() {
-    arm = loadImage('arm125.png')
+    arm = loadImage('arm125.png');
+    dummy = loadImage('bird.png');
 }
 
 // *************** //
 
 function setup() {
-<<<<<<< HEAD
-  createCanvas(600, 600);
-
-  // ellipseMode(RADIUS)
-  line(pivot_x, pivot_y, 300, 250);
-  pinata = createSprite(pivot_x, pivot_y, 50, 50);
-  pinata.draw = function() {fill(125, 125), stroke(0, 125, 235), strokeWeight(2),ellipse(0, 0, 40, 90)}
-  pinata.shapeColor = color(0, 100);
-  pinata.velocity.y = 0;
-  pinata.velocity.x = 0;
-
-  // bat
-  bat = createSprite(500, 450, 20, 200);
-  bat.shapeColor = color(128);
-  bat.addImage(arm)
-  bat.velocity.x = 0;
-  
-
-  // testing collision sprite
-  spr2 = createSprite(0, 0, 20, 20);
-  spr2.shapeColor = color(128);
-=======
-    createCanvas(600, 600);
+    var myCanvas = createCanvas(600, 600);
+    myCanvas.parent('canvas');
 
     // cord
     line(pivot_x, pivot_y, 300, 250);
 
     // pinata
     pinata = createSprite(pivot_x, pivot_y, 50, 50);
-    pinata.draw = function() {
-        fill(125, 125),
-        stroke(0, 125, 235),
-        strokeWeight(2),
-        ellipse(0, 0, 40, 90)
-    }
+    pinata.addImage(dummy);
+    // pinata.draw = function() {
+    //     fill(125, 125),
+    //     stroke(0, 125, 235),
+    //     strokeWeight(2),
+    //     ellipse(0, 0, 40, 90)
+    // }
     pinata.shapeColor = color(0, 100);
     pinata.velocity.y = 0;
     pinata.velocity.x = 0;
@@ -94,7 +75,11 @@ function setup() {
 
     // pull
     pull = -200;
->>>>>>> 86b8105c9044bb2fb510572128add9ad53bd2637
+    
+    // candies
+    for (var i=0; i<150; i++) {
+      candies.push(new Candy());
+    }
 }
 
 // bat hit function triggered by mouse press
@@ -124,7 +109,7 @@ function hit() {
     if (bat.overlap(pinata)) {
 
         // translate phone-speed to angle - some equation here
-        angle = -Math.PI / 8 * 1;
+        angle = -Math.PI / 15 * 1;
         // console.log("show stats of swing or damage caused to pinata")
 
         // update hits
@@ -146,93 +131,75 @@ function draw() {
 
 
     // what happens after screwing up pinata
-    if (hits >= 15) {
+    if (hits >= 7) {
         pinata.remove();
         // replace here with broken pinata
         pinata.velocity.x = 0;
         pinata.velocity.y = 0;
         line(pivot_x, pivot_y, pivot_x, pivot_y + len);
+        for (var i=0; i < candies.length; i++) {
+    
+        //   if (candies[i].pos.x > 0) {
+          candies[i].applyForce();
+          candies[i].update();
+          candies[i].show();
+          
+          // bounce off screen-bottom
+          // if (candies[i].pos.y > height - 20) {
+          //   candies[i].pos.y = height - 20;
+          //   candies[i].vel.x *= 0.9;
+          //   candies[i].vel.y *= -0.6;
+          // }
+        //   }
+        
+  }
     } else {
         pinataSwing()
     }
+    
 
     // cord pull trigger
     if (accelerationY !== 0) {
         // what accelerationY will trigger spring motion,
         // negative value to pinata upward motion
 
-    if (bat.overlap(pinata)) {
-    pinata.shapeColor = color(255);
-    // angle set to 45 after hit/overlap/collision occurs
+        updateSpring()
+    }
 
-    // set math here:
-    // speed from bat (verctor if pinata designed in sections)
-    // translate speed to angle, add delayed reaction if needed
-    angle = -Math.PI/4 * 1;
-    console.log("show stats of swing or damage caused to pinata")
-
-    // remove pinata at some point
-    hits++;
-    console.log("number of hits: " + hits);
-
-  }
-  else {
-    pinata.shapeColor = color(0);
-  }
- }
-
-  // what happens after screwing up pinata
-  if (hits >= 10) {
-      pinata.remove();
-      // replace here with broken pinata
-      pinata.velocity.x = 0;
-      pinata.velocity.y = 0;
-      line(300, pivot_y, 300, 350);
-    } else {
-  // if (angle != 0) {
-    pinataSwing()
-  // }
-  }
-  
-  if (hits !== 0 ) {
-    displacement = accelerationY;
-    updateSpring()
-  }
-  
-  hit();
-  drawSprites();
+    hit();
+    drawSprites();
 }
 
 // ************************ //
 
 function updateSpring() {
 
-  // Update the spring position
-  if ( accelerationY > -30 ) {
-    // f = -K * ( ps + R ); // f=-ky
-      f = -K * ( ps ); // f=-ky
-    as = f / M;          // Set the acceleration, f=ma == a=f/m
-    vs += as; // Set the velocity
-    vs *= D;  // damping
-    ps = ps + vs;        // Updated position
-  }
+    // Update the spring position
+    if (accelerationY > -30) {
+        f = -K * (ps); // f=-ky
+        as = f / M; // Set the acceleration, f=ma == a=f/m
+        vs += as; // Set the velocity
+        vs *= D; // damping
+        ps = ps + vs; // Updated position
+    }
 
-  if ( abs(vs) > 5) {
-    ready = false;
-  } else { ready = true}
-  if (abs(vs) < 0.1) {
-    vs = 0.0;
-  }
+    if (abs(vs) > 5) {
+        ready = false;
+    } else {
+        ready = true
+    }
+    if (abs(vs) < 0.1) {
+        vs = 0.0;
+    }
 
+    // Set and constrain the position of top bar
+    if (accelerationY < -30) {
+        // $('.accData').append($('<li>').text("Y acc: " + accelerationY))
+        ps = accelerationY * 0.5;
+        accelerationY *= 0.01;  // damping
+        ps = constrain(ps, minHeight, maxHeight);
+    }
 
-  // Set and constrain the position of top bar
-  if (accelerationY < -30) {
-    // $('.accData').append($('<li>').text("Y acc: " + pull))
-    ps = accelerationY*0.5;
-    accelerationY *= 0.01;
-    ps = constrain(ps, minHeight, maxHeight);
-  }
-  
 }
 
 // ******************** //
@@ -254,4 +221,40 @@ function pinataSwing(displacement) {
     line(pivot_x, pivot_y, pinata.position.x + random(-1, 1), pinata.position.y);
     pinata.addSpeed(pinata.velocity.y, acc);
 
+}
+
+// ******************** //
+
+function Candy(batForce, img) {
+  
+  this.pos = createVector(pivot_x - 10, pivot_y + len + 40);
+  // this.img = sweet;
+  
+  this.vel = createVector(random(-1, 0.2), random(-2,0));
+  
+  this.vel.mult(random(0, 3))
+  this.acc = createVector(0, 0);
+  var grav = createVector(0, 0.1);
+  
+ 
+  this.applyForce = function() {
+  // mass = 1
+    this.acc.add(grav);
+  }
+  
+  this.update = function(){
+    this.vel.add(this.acc);
+    this.pos.add(this.vel);
+    this.acc.mult(0);
+  }
+  
+  this.show = function() {
+    fill(125, 125, 255);
+    noStroke;
+    // stroke(0, 125, 235);
+    // strokeWeight(1);
+    imageMode(CENTER);
+    // image(this.img, this.pos.x, this.pos.y )
+    ellipse(this.pos.x, this.pos.y, random(7, 11), random(5, 9));
+  }
 }
